@@ -1,0 +1,30 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier --write 'src/**/*.{js,ts,json}'",
+    "seed": "node src/utils/seed.js",
+    "discord": "node src/discord.js",
+    "web": "nodemon src/index.js",
+    "reset": "prisma db push --force-reset && prisma db seed"
+  },
+  "keywords": [],
+  "author": "Wahyu Siwananda",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "dependencies": {
+    "@prisma/client": "^6.10.1",
+    "bcryptjs": "^3.0.2",
+    "discord.js": "^14.21.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "multer": "^2.0.1",
+    "nodemon": "^3.1.10",
+    "prisma": "^6.10.1"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.1"
+  }
+}

@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  messageId String
+  channelId String
+  guildId   String
+  author    String
+  content   String
+  timestamp DateTime
+}
+
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  password String   
+  image    String?    
+  createdAt DateTime @default(now())
+}
+
+model ApiKey {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
