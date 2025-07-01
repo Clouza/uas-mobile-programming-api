@@ -91,7 +91,7 @@ const upload = multer({ storage });
 
 router.post("/user", upload.single("file"), async (req, res) => {
 	try {
-		const { id, email, password, apiKey } = req.body;
+		let { id, email, password, apiKey } = req.body;
 		if (!id) return res.status(400).json({ message: "Id required" });
 
 		const updateData = {};
@@ -102,19 +102,30 @@ router.post("/user", upload.single("file"), async (req, res) => {
 		}
 
 		if (email) updateData.email = email;
-		if (apiKey) updateData.apiKey = apiKey;
 		if (password) {
 			const salt = await bcrypt.genSalt(10);
 			updateData.password = await bcrypt.hash(password, salt);
 		}
 
-		if (Object.keys(updateData).length == 0) {
+		if (Object.keys(updateData).length == 0 && apiKey == null) {
 			return res.status(400).json({ message: "No update data provided" });
+		}
+
+		if (apiKey) {
+			apiKey = await prisma.apiKey.findFirst({
+				where: {
+					key: apiKey,
+					expiresAt: {
+						gte: new Date(),
+					},
+				},
+			}).then(data => data?.key || null);
 		}
 
 		const userInfo = await prisma.user.findUnique({ where: { id } });
 		if (!userInfo) return res.status(404).json({ message: "User not found" });
 
+		// update user
 		const updatedUser = await prisma.user.update({
 			where: { id },
 			data: updateData,
@@ -124,7 +135,7 @@ router.post("/user", upload.single("file"), async (req, res) => {
 			success: true,
 			email: updatedUser.email,
 			image: updatedUser.image,
-			apiKey: updatedUser.apiKey,
+			apiKey: apiKey,
 		});
 	} catch (error) {
 		res.status(500).json({
