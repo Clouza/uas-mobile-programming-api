@@ -7,12 +7,12 @@ import fs from "fs";
 
 const router = express.Router();
 
-router.post('/news', async (req, res) => {
+router.post("/news", async (req, res) => {
 	const { apiKey } = req.body;
 	if (!apiKey) {
 		return res.status(400).json({
 			success: false,
-			message: 'apiKey required',
+			message: "apiKey required",
 		});
 	}
 
@@ -20,12 +20,12 @@ router.post('/news', async (req, res) => {
 	if (!key) {
 		return res.status(401).json({
 			success: false,
-			message: 'Invalid apiKey'
+			message: "Invalid apiKey",
 		});
 	}
 
 	const news = await prisma.news.findMany({
-		orderBy: { timestamp: 'desc' }
+		orderBy: { timestamp: "desc" },
 	});
 
 	res.json({ news });
@@ -41,13 +41,13 @@ router.post("/login", async (req, res) => {
 		const isValid = await bcrypt.compare(password, user.password);
 		return res.json({
 			id: isValid ? user.id : null,
-			success: isValid
+			success: isValid,
 		});
 	} catch (error) {
 		res.json({
 			success: false,
 			message: "Samting weng wong.",
-			error: error.message
+			error: error.message,
 		}).status(500);
 	}
 });
@@ -62,13 +62,13 @@ router.post("/key", async (req, res) => {
 		const isValid = new Date() < apiKey.expiresAt;
 		return res.json({
 			success: isValid,
-			apiKey: apiKey.key
+			apiKey: apiKey.key,
 		});
 	} catch (error) {
 		res.json({
 			success: false,
 			message: "Samting weng wong.",
-			error: error.message
+			error: error.message,
 		}).status(500);
 	}
 });
@@ -119,7 +119,7 @@ router.post("/user", upload.single("file"), async (req, res) => {
 						gte: new Date(),
 					},
 				},
-			}).then(data => data?.key || null);
+			}).then((data) => data?.key || null);
 		}
 
 		const userInfo = await prisma.user.findUnique({ where: { id } });
@@ -162,7 +162,7 @@ router.get("/user", async (req, res) => {
 		res.json({
 			success: false,
 			message: "Samting weng wong.",
-			error: error.message
+			error: error.message,
 		});
 	}
 });
