@@ -18,17 +18,20 @@ router.post("/news", async (req, res) => {
 
 	const key = await prisma.apiKey.findUnique({ where: { key: apiKey } });
 	if (!key) {
-		return res.status(401).json({
+		return res.json({
 			success: false,
-			message: "Invalid apiKey",
+			message: "Invalid API Key",
 		});
 	}
 
-	const news = await prisma.news.findMany({
+	const news = await prisma.message.findMany({
 		orderBy: { timestamp: "desc" },
 	});
 
-	res.json({ news });
+	res.json({
+		success: true,
+		news
+	});
 });
 
 router.post("/login", async (req, res) => {
@@ -98,7 +101,7 @@ router.post("/user", upload.single("file"), async (req, res) => {
 
 		// cek file
 		if (req.file) {
-			updateData.image = `/files/${req.file.filename}`;
+			updateData.image = `${req.file.filename}`;
 		}
 
 		if (email) updateData.email = email;
