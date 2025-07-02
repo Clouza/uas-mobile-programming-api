@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import axios from "axios";
 
 const router = express.Router();
 
@@ -166,6 +167,69 @@ router.get("/user", async (req, res) => {
 			success: false,
 			message: "Samting weng wong.",
 			error: error.message,
+		});
+	}
+});
+
+// AI
+router.post("/macro", async (req, res) => {
+	const { text } = req.body;
+	if (!text) return res.status(400).json({ message: "text required" });
+
+	const prompt = `Jelaskan secara ringkas dan jelas isi dari informasi berikut terhadap pasar secara makroekonomi. Informasi: ${text}`;
+	try {
+		const result = await axios.post(
+			"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+			{
+				contents: [
+					{
+						parts: [{ text: prompt }]
+					}
+				]
+			},
+			{
+				headers: {
+					"Content-Type": "application/json",
+					"X-goog-api-key": process.env.AI_API_KEY
+				}
+			}
+		);
+		res.json(result.data);
+	} catch (err) {
+		res.status(500).json({
+			message: "Error from API",
+			detail: err?.response?.data || err.message
+		});
+	}
+});
+
+router.post("/recommendation", async (req, res) => {
+	const { text } = req.body;
+	if (!text) return res.status(400).json({ message: "text required" });
+
+	const prompt = `Berikan rekomendasi apa yang harus dilakukan sebagai investor pemula terhadap informasi berikut secara makroekonomi. Informasi: ${text}`;
+	try {
+		const result = await axios.post(
+			"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+			{
+				contents: [
+					{
+						parts: [{ text: prompt }]
+					}
+				]
+			},
+			{
+				headers: {
+					"Content-Type": "application/json",
+					"X-goog-api-key": process.env.AI_API_KEY
+				}
+			}
+		);
+		res.json(result.data);
+	} catch (err) {
+		res.status(500).json({
+			message: "Error from API",
+			detail: err?.response?.data || err.message
 		});
 	}
 });
