@@ -15,11 +15,11 @@ datasource db {
 
 model Message {
   id        String   @id @default(uuid())
-  messageId String
+  messageId String   @unique
   channelId String
   guildId   String
   author    String
-  content   String
+  content   String   @db.Text
   timestamp DateTime
 }
 
